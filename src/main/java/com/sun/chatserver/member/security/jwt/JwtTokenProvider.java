@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.Date;
 
@@ -16,6 +17,7 @@ public class JwtTokenProvider {
     private final String secretKey;
 
     private final int expiration;
+    private final int refreshExpiration = (int) Duration.ofDays(7).toMillis(); // 7일
 
     private SecretKey SECRET_KEY;
 
@@ -27,13 +29,26 @@ public class JwtTokenProvider {
                 SignatureAlgorithm.HS256.getJcaName());
     }
 
-    public String createToken(String email, String role) {
+    //refresh token 용
+    public String createRefreshToken(String email, String role, Long userId, String name) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expiration);
+        Date expiryDate = new Date(now.getTime() + refreshExpiration);
+        return jwtBuilder(email, role, userId, name, now, expiryDate);
+    }
 
+    public String createToken(String email, String role, Long userId, String name) {
+        Date now = new Date();
+        Date expiryDate = new Date(expiration);
+
+        return jwtBuilder(email, role, userId, name, now, expiryDate);
+    }
+
+    private String jwtBuilder(String email, String role, Long userId, String name, Date now, Date expiryDate) {
         return Jwts.builder()
                 .subject(email)                             // JWT subject에 email 저장
-                .claim("role", role)                        // role을 claim으로 추가
+                .claim("role", role)
+                .claim("userId", userId)
+                .claim("name", name)
                 .issuedAt(now)                              // 토큰 발행 시간
                 .expiration(expiryDate)                     // 토큰 만료 시간
                 .signWith(SECRET_KEY, Jwts.SIG.HS256)       // 0.12.x 버전 방식
@@ -60,6 +75,17 @@ public class JwtTokenProvider {
                 .getPayload();
 
         return claims.get("role", String.class);
+    }
+
+    //jwt 토큰에서 userId 추출
+    public Long getUserIdFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(SECRET_KEY)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        return claims.get("userId", Long.class);
     }
 
     // JWT 토큰에서 모든 claims 추출

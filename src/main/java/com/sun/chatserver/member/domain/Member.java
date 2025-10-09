@@ -40,7 +40,7 @@ public class Member {
     //생성자
     public static Member createMember(MemberSaveRequestDto dto) {
         return Member.builder()
-                .name(dto.getName())
+                .name(dto.getUsername())
                 .email(dto.getEmail())
                 .password(dto.getPassword())
                 .role(Role.USER)
