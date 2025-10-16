@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)//httpBasic 인증방식 비활성화
                 .authorizeHttpRequests(authorize ->
                         authorize
-                                .requestMatchers("/api/members/signup","/api/members/signin","/connect/**").permitAll() //회원가입, 로그인 API는 모두 접근 허용
+                                .requestMatchers("/api/members/refresh","/api/members/signup","/api/members/signin","/connect/**").permitAll() //회원가입, 로그인 API는 모두 접근 허용
                         .anyRequest().authenticated()
 
                 )

@@ -25,6 +25,7 @@ public class JwtTokenProvider {
                             @Value("${jwt.expiration}") int expiration) {
         this.secretKey = secretKey;
         this.expiration = expiration;
+        //인코딩되어있는 키를 디코딩 하고 암호화 알고리즘을 적용
         this.SECRET_KEY = new SecretKeySpec(Base64.getDecoder().decode(secretKey),
                 SignatureAlgorithm.HS256.getJcaName());
     }
@@ -38,7 +39,7 @@ public class JwtTokenProvider {
 
     public String createToken(String email, String role, Long userId, String name) {
         Date now = new Date();
-        Date expiryDate = new Date(expiration);
+        Date expiryDate = new Date(now.getTime() + expiration);
 
         return jwtBuilder(email, role, userId, name, now, expiryDate);
     }
@@ -107,7 +108,6 @@ public class JwtTokenProvider {
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             // JWT 검증 실패 (만료, 서명 오류, 잘못된 형식 등)
-
             return false;
         }
     }

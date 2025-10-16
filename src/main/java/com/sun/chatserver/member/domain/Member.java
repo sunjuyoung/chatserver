@@ -1,6 +1,7 @@
 package com.sun.chatserver.member.domain;
 
 
+import com.sun.chatserver.chat.common.domain.BaseTimeEntity;
 import com.sun.chatserver.member.dto.MemberSaveRequestDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Table(name = "member")
-public class Member {
+public class Member extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -18,7 +18,7 @@ public class RefreshTokenService {
     private final RedisTemplate<String, String> redisTemplate;
 
     private static final String REFRESH_TOKEN_PREFIX = "refresh_token:";
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 7 * 24 * 60 * 60; // 7일 (초)
+    private static final long REFRESH_TOKEN_EXPIRE_TIME = 604800L;
 
     /**
      * 로그인 시 Refresh Token 저장

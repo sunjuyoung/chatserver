@@ -61,6 +61,7 @@ public class MemberService {
         // 1. Refresh Token JWT 자체 유효성 검증 (서명, 만료시간)
         if (!jwtTokenProvider.validateToken(refreshToken)) {
             //throw new InvalidTokenException("Invalid refresh token");
+            throw new IllegalArgumentException("Invalid refresh token");
         }
 
         // 2. JWT에서 모든 클레임 추출

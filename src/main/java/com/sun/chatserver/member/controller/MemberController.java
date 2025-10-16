@@ -35,7 +35,6 @@ public class MemberController {
     @PostMapping("/signin")
     public ResponseEntity<ApiResponse> doLogin(@RequestBody MemberLoginDto dto) {
         MemberResponseDto responseDto = memberService.doLogin(dto);
-        log.info(dto.toString());
 
         String token = jwtTokenProvider.createToken(responseDto.getEmail(), responseDto.getRole(),
                 responseDto.getId(), responseDto.getName());
@@ -70,6 +69,7 @@ public class MemberController {
 
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse> refresh(@RequestBody RefreshTokenDto refreshDTO) {
+        log.info("Refresh token request received: {}", refreshDTO);
         RefreshTokenDto refreshTokenDto = memberService.refreshAccessToken(refreshDTO.getRefreshToken());
         ApiResponse<RefreshTokenDto> response = success("success", refreshTokenDto);
         return ResponseEntity.ok(response);

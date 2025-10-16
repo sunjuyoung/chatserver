@@ -25,6 +25,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
+
+
     private final JwtTokenProvider jwtTokenProvider;
 
 
@@ -92,8 +94,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
         // JWT 검증을 제외할 경로들
-        return path.equals("/api/members/doLogin") ||
-                path.equals("/api/members/create");
+        return path.equals("/api/members/signin") ||
+                path.equals("/api/members/signup");
     }
 }
 
