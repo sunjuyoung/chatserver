@@ -175,4 +175,12 @@ public class ChatService {
             }
         });
     }
+
+    public  List<ChatRoomMember> incrementUnreadCount(Long roomId, String senderId) {
+
+
+        //보낸 사람을 제외한 채팅방 멤버 조회
+        return chatRoomMemberRepository.findByChatRoomId(roomId);
+
+    }
 }

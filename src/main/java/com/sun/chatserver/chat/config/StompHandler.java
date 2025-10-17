@@ -68,7 +68,7 @@ public class StompHandler implements ChannelInterceptor {
                     .getBody();
             String email = claims.getSubject();
             String roomId = accessor.getDestination().split("/")[2];
-            boolean is = chatService.isRoomMember(Long.parseLong(roomId), email);
+          //  boolean is = chatService.isRoomMember(Long.parseLong(roomId), email);
         }
         return message;
 

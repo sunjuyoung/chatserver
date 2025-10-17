@@ -1,12 +1,17 @@
 package com.sun.chatserver.chat.controller;
 
+import com.sun.chatserver.chat.domain.ChatRoomMember;
 import com.sun.chatserver.chat.dto.ChatMessageDto;
+import com.sun.chatserver.chat.dto.ChatNotificationDto;
 import com.sun.chatserver.chat.service.ChatService;
+import com.sun.chatserver.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
+
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -40,8 +45,26 @@ public class StompController {
         Long saveMessage = chatService.saveMessage(roomId, chatMessageDto);
         chatMessageDto.setId(String.valueOf(saveMessage));
 
+        List<ChatRoomMember> chatRoomMembers = chatService.incrementUnreadCount(roomId, chatMessageDto.getSenderId());
+
+
         //STOMP 메시지를 특정 (채팅방) 구독자들에게 발행
         messageTemplate.convertAndSend("/topic/" + roomId, chatMessageDto);
+
+
+        for (ChatRoomMember roomMember : chatRoomMembers) {
+            Member member = roomMember.getMember();
+            if (!member.getEmail().equals(chatMessageDto.getSenderId())) {
+                log.info("Notifying member {} about new message in room {}", member.getId(), roomId);
+                //읽음 상태 조회
+                messageTemplate.convertAndSendToUser(
+                        member.getId().toString(),
+                        "/queue/notifications",
+                        new ChatNotificationDto("NEW_MESSAGE", roomId, 100L, chatMessageDto.getContent())
+                );
+
+            }
+        }
     }
 
 }
